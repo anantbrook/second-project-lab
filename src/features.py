@@ -34,6 +34,30 @@ FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 TARGET_COLUMN = "Amount(in rupees)"
 
 
+def _map_unique(series: pd.Series, mapper) -> pd.Series:
+    """Map distinct values when useful, then restore the original row order."""
+    if len(series) < 128:
+        return series.map(mapper)
+
+    codes, unique_values = pd.factorize(series, sort=False)
+    if len(unique_values) > 0.8 * len(series):
+        return series.map(mapper)
+    if len(unique_values) == 0:
+        return series.map(mapper)
+
+    mapped = pd.Series(unique_values).map(mapper).to_numpy()
+    missing = codes < 0
+    if missing.any() and mapped.dtype.kind in "biuUS":
+        mapped = mapped.astype(object)
+    result = np.empty(len(codes), dtype=mapped.dtype)
+    if missing.any():
+        missing_values = np.empty(int(missing.sum()), dtype=object)
+        missing_values.fill(mapper(np.nan))
+        result[missing] = missing_values
+    result[~missing] = mapped[codes[~missing]]
+    return pd.Series(result, index=series.index, name=series.name)
+
+
 def _is_missing(value: Any) -> bool:
     if value is None:
         return True
@@ -134,49 +158,50 @@ def prepare_features(frame: pd.DataFrame) -> pd.DataFrame:
 
     titles = frame.get("Title", pd.Series(index=frame.index, dtype="object"))
     floors = frame.get("Floor", pd.Series(index=frame.index, dtype="object"))
-    floor_pairs = floors.map(_floor_values)
+    floor_pairs = _map_unique(floors, _floor_values)
 
-    result["BHK"] = titles.map(_bhk_from_title)
-    result["Carpet_Area_SqFt"] = frame.get(
-        "Carpet Area", pd.Series(index=frame.index, dtype="object")
-    ).map(_area_sqft)
-    result["Super_Area_SqFt"] = frame.get(
-        "Super Area", pd.Series(index=frame.index, dtype="object")
-    ).map(_area_sqft)
-    result["Bathrooms"] = frame.get(
-        "Bathroom", pd.Series(index=frame.index, dtype="object")
-    ).map(_number)
-    result["Balcony"] = frame.get(
-        "Balcony", pd.Series(index=frame.index, dtype="object")
-    ).map(_number)
+    result["BHK"] = _map_unique(titles, _bhk_from_title)
+    result["Carpet_Area_SqFt"] = _map_unique(
+        frame.get("Carpet Area", pd.Series(index=frame.index, dtype="object")), _area_sqft
+    )
+    result["Super_Area_SqFt"] = _map_unique(
+        frame.get("Super Area", pd.Series(index=frame.index, dtype="object")), _area_sqft
+    )
+    result["Bathrooms"] = _map_unique(
+        frame.get("Bathroom", pd.Series(index=frame.index, dtype="object")), _number
+    )
+    result["Balcony"] = _map_unique(
+        frame.get("Balcony", pd.Series(index=frame.index, dtype="object")), _number
+    )
     result["Floor_Number"] = floor_pairs.map(lambda pair: pair[0])
     result["Total_Floors"] = floor_pairs.map(lambda pair: pair[1])
-    result["Parking_Spaces"] = frame.get(
-        "Car Parking", pd.Series(index=frame.index, dtype="object")
-    ).map(_parking_spaces)
+    result["Parking_Spaces"] = _map_unique(
+        frame.get("Car Parking", pd.Series(index=frame.index, dtype="object")),
+        _parking_spaces,
+    )
 
-    result["location"] = frame.get(
-        "location", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["Status"] = frame.get(
-        "Status", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["Transaction"] = frame.get(
-        "Transaction", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["Furnishing"] = frame.get(
-        "Furnishing", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["facing"] = frame.get(
-        "facing", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["overlooking"] = frame.get(
-        "overlooking", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["Ownership"] = frame.get(
-        "Ownership", pd.Series(index=frame.index, dtype="object")
-    ).map(_category)
-    result["property_type"] = titles.map(_property_type)
+    result["location"] = _map_unique(
+        frame.get("location", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["Status"] = _map_unique(
+        frame.get("Status", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["Transaction"] = _map_unique(
+        frame.get("Transaction", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["Furnishing"] = _map_unique(
+        frame.get("Furnishing", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["facing"] = _map_unique(
+        frame.get("facing", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["overlooking"] = _map_unique(
+        frame.get("overlooking", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["Ownership"] = _map_unique(
+        frame.get("Ownership", pd.Series(index=frame.index, dtype="object")), _category
+    )
+    result["property_type"] = _map_unique(titles, _property_type)
 
     return result[FEATURE_COLUMNS]
 

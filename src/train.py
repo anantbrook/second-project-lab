@@ -37,6 +37,7 @@ from src.features import (  # noqa: E402
     NUMERIC_FEATURES,
     TARGET_COLUMN,
     _area_sqft,
+    _map_unique,
     parse_amount,
     parse_price,
     prepare_features,
@@ -118,9 +119,9 @@ def train(data_path: Path, max_rows: int | None = None, skip_mlflow: bool = Fals
     else:
         raw = raw.reset_index(drop=True)
 
-    raw["_target_price"] = raw[TARGET_COLUMN].map(parse_amount)
-    raw["_area_sqft"] = raw["Carpet Area"].map(_area_sqft)
-    raw["_rate_per_sqft"] = raw["Price (in rupees)"].map(parse_price)
+    raw["_target_price"] = _map_unique(raw[TARGET_COLUMN], parse_amount)
+    raw["_area_sqft"] = _map_unique(raw["Carpet Area"], _area_sqft)
+    raw["_rate_per_sqft"] = _map_unique(raw["Price (in rupees)"], parse_price)
     derived_rate = raw["_target_price"] / raw["_area_sqft"]
     raw["_rate_per_sqft"] = raw["_rate_per_sqft"].where(
         raw["_rate_per_sqft"].gt(0), derived_rate
@@ -324,7 +325,8 @@ def _log_mlflow(regression_model, classifier, reg_metrics, clf_metrics, rows: in
         import mlflow.sklearn
     except ImportError as exc:
         raise RuntimeError(
-            "MLflow is required. Install dependencies with: pip install -r requirements.txt"
+            "MLflow is a development dependency. "
+            "Install it with: python -m pip install -r requirements-dev.txt"
         ) from exc
 
     tracking_uri = os.environ.get(

@@ -31,7 +31,7 @@ Run the notebook cells from top to bottom to refresh EDA reports and model artif
 
     python -m streamlit run app.py
 
-The dashboard loads assessment options and market summaries only when their section is selected; its price histogram is sampled to 50,000 rows for faster rendering.
+The dashboard loads each section on demand, maps repeated listing strings only once during parsing, samples the histogram to 50,000 rows, and runs one-property model predictions with a single worker.
 
 The EDA report and location table appear in reports/. Trained estimators and their metrics appear in models/. MLflow tracking metadata is stored in mlflow.db, with model artifacts in mlruns/.
 

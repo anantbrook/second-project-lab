@@ -14,6 +14,7 @@ import streamlit as st
 from src.features import (
     FEATURE_COLUMNS,
     _area_sqft,
+    _map_unique,
     parse_amount,
     parse_price,
     prepare_features,
@@ -80,9 +81,9 @@ def load_market_data(
     path: str, modified_ns: int
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int | float]]:
     frame = pd.read_csv(path, usecols=MARKET_COLUMNS, low_memory=False)
-    frame["price_rupees"] = frame["Amount(in rupees)"].map(parse_amount)
-    frame["carpet_area_sqft"] = frame["Carpet Area"].map(_area_sqft)
-    frame["price_per_sqft"] = frame["Price (in rupees)"].map(parse_price)
+    frame["price_rupees"] = _map_unique(frame["Amount(in rupees)"], parse_amount)
+    frame["carpet_area_sqft"] = _map_unique(frame["Carpet Area"], _area_sqft)
+    frame["price_per_sqft"] = _map_unique(frame["Price (in rupees)"], parse_price)
     derived_rate = frame["price_rupees"] / frame["carpet_area_sqft"]
     frame["price_per_sqft"] = frame["price_per_sqft"].where(
         frame["price_per_sqft"].gt(0), derived_rate
@@ -133,6 +134,9 @@ def load_models(artifact_signature: tuple[int, ...]):
         return None
     regressor = joblib.load(REGRESSOR_PATH)
     classifier = joblib.load(CLASSIFIER_PATH)
+    # Single-listing predictions are faster without spawning every available worker.
+    regressor.set_params(model__n_jobs=1)
+    classifier.set_params(model__n_jobs=1)
     benchmarks = json.loads(BENCHMARK_PATH.read_text(encoding="utf-8"))
     return regressor, classifier, benchmarks
 
@@ -483,7 +487,8 @@ def _model_tab() -> None:
                 title="Top regression features",
             )
             st.plotly_chart(fig, use_container_width=True)
-    st.code("mlflow ui --backend-store-uri ./mlruns", language="powershell")
+    st.caption("To inspect local training runs from the project folder:")
+    st.code("mlflow ui --backend-store-uri sqlite:///mlflow.db", language="powershell")
 
 
 def main() -> None:

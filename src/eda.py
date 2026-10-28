@@ -10,7 +10,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
-from src.features import _area_sqft, parse_amount, parse_price  # noqa: E402
+from src.features import _area_sqft, _map_unique, parse_amount, parse_price  # noqa: E402
 
 
 def run(data_path: Path) -> None:
@@ -26,9 +26,9 @@ def run(data_path: Path) -> None:
         ],
         low_memory=False,
     )
-    frame["price_rupees"] = frame["Amount(in rupees)"].map(parse_amount)
-    frame["carpet_area_sqft"] = frame["Carpet Area"].map(_area_sqft)
-    frame["price_per_sqft"] = frame["Price (in rupees)"].map(parse_price)
+    frame["price_rupees"] = _map_unique(frame["Amount(in rupees)"], parse_amount)
+    frame["carpet_area_sqft"] = _map_unique(frame["Carpet Area"], _area_sqft)
+    frame["price_per_sqft"] = _map_unique(frame["Price (in rupees)"], parse_price)
     derived_rate = frame["price_rupees"] / frame["carpet_area_sqft"]
     frame["price_per_sqft"] = frame["price_per_sqft"].where(
         frame["price_per_sqft"].gt(0), derived_rate
