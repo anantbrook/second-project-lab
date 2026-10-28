@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+mlruns/
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+Project Title*.docx

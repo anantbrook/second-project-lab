@@ -1,0 +1,4 @@
+-r requirements.txt
+mlflow==3.17.2
+jupyterlab>=4.2
+ipykernel>=6.29

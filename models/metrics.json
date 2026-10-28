@@ -1,0 +1,33 @@
+{
+  "dataset_file": "India_Property_Listings.csv",
+  "rows_used": 47430,
+  "train_rows": 37944,
+  "test_rows": 9486,
+  "classifier_rows": 47404,
+  "classifier_train_rows": 37923,
+  "classifier_test_rows": 9481,
+  "regression": {
+    "mae_rupees": 1382987.2271054382,
+    "rmse_rupees": 7257662.9541005995,
+    "r2": 0.732098565960764
+  },
+  "classification_proxy": {
+    "accuracy": 0.8520198291319481,
+    "precision": 0.8227799227799227,
+    "recall": 0.8978302085527702,
+    "f1": 0.8586682784325577,
+    "roc_auc": 0.9438556306079602,
+    "confusion_matrix": [
+      [
+        3816,
+        918
+      ],
+      [
+        485,
+        4262
+      ]
+    ]
+  },
+  "classification_target": "Below local median listing price per square foot",
+  "forecast_note": "The dataset has listing prices, not five-year outcomes. The app applies a user-selected annual growth assumption to produce a scenario."
+}

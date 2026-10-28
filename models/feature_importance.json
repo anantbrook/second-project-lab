@@ -1,0 +1,122 @@
+[
+  {
+    "feature": "numeric__Bathrooms",
+    "importance": 0.23991467410459028
+  },
+  {
+    "feature": "numeric__BHK",
+    "importance": 0.21137299741352916
+  },
+  {
+    "feature": "numeric__missingindicator_Parking_Spaces",
+    "importance": 0.08894528560301225
+  },
+  {
+    "feature": "categorical__location_new-delhi",
+    "importance": 0.05202953848517973
+  },
+  {
+    "feature": "categorical__location_gurgaon",
+    "importance": 0.0336457357895517
+  },
+  {
+    "feature": "numeric__Total_Floors",
+    "importance": 0.03356969186198461
+  },
+  {
+    "feature": "numeric__Super_Area_SqFt",
+    "importance": 0.029945485381739866
+  },
+  {
+    "feature": "categorical__location_bangalore",
+    "importance": 0.028552377205709616
+  },
+  {
+    "feature": "categorical__location_kolkata",
+    "importance": 0.02648035775368197
+  },
+  {
+    "feature": "numeric__Carpet_Area_SqFt",
+    "importance": 0.02626274838815164
+  },
+  {
+    "feature": "categorical__location_mumbai",
+    "importance": 0.023974286606347355
+  },
+  {
+    "feature": "numeric__Balcony",
+    "importance": 0.019072575787515172
+  },
+  {
+    "feature": "numeric__Floor_Number",
+    "importance": 0.014263843870636252
+  },
+  {
+    "feature": "categorical__location_jaipur",
+    "importance": 0.011390810903646001
+  },
+  {
+    "feature": "categorical__location_hyderabad",
+    "importance": 0.0109828540613284
+  },
+  {
+    "feature": "numeric__Parking_Spaces",
+    "importance": 0.0090092275938709
+  },
+  {
+    "feature": "numeric__missingindicator_Balcony",
+    "importance": 0.008267102224934498
+  },
+  {
+    "feature": "categorical__Furnishing_unfurnished",
+    "importance": 0.007698179975769747
+  },
+  {
+    "feature": "categorical__overlooking_unknown",
+    "importance": 0.007200289349585491
+  },
+  {
+    "feature": "categorical__Furnishing_furnished",
+    "importance": 0.006621523312207967
+  },
+  {
+    "feature": "categorical__location_chennai",
+    "importance": 0.0066149918341994645
+  },
+  {
+    "feature": "categorical__facing_north - west",
+    "importance": 0.005753131830862042
+  },
+  {
+    "feature": "categorical__overlooking_garden/park",
+    "importance": 0.005453150699209833
+  },
+  {
+    "feature": "categorical__Ownership_unknown",
+    "importance": 0.005302012660967038
+  },
+  {
+    "feature": "categorical__facing_east",
+    "importance": 0.004878986598234406
+  },
+  {
+    "feature": "categorical__location_bhiwadi",
+    "importance": 0.004538122581861924
+  },
+  {
+    "feature": "categorical__facing_north - east",
+    "importance": 0.00441147202267228
+  },
+  {
+    "feature": "categorical__overlooking_pool",
+    "importance": 0.003972262355606816
+  },
+  {
+    "feature": "numeric__missingindicator_Floor_Number",
+    "importance": 0.003804236180806179
+  },
+  {
+    "feature": "categorical__Furnishing_semi-furnished",
+    "importance": 0.0035917391475479505
+  }
+]
